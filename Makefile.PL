@@ -5,7 +5,7 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     'NAME'         => 'Net::ZKMon',
     'DISTNAME'     => 'Net-ZKMon',
-    'VERSION_FROM' => 'ZKMon.pm',
+    'VERSION_FROM' => 'lib/Net/ZKMon.pm',
     'AUTHOR'       => 'Nikhil Mulley <mnikhil@gmail.com',
     'ABSTRACT'     => 'Wrapper module around Zookeeper monitoring',
     'PREREQ_PM'    => {
