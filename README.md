@@ -5,9 +5,11 @@ Net::ZKMon(3)         User Contributed Perl Documentation        Net::ZKMon(3)
 
 
 NAME
+============
        Net::ZKMon
-
+       ==========
 DESCRIPTION
+============
        Description :
          A wrapper module around Zookeeper's 4 letter command words.
          The intention is to use the abstract methods and have the resultant
@@ -15,9 +17,11 @@ DESCRIPTION
          thus reducing the parsing overhead involved in the scripts.
 
 REQUIRES
+========
        IO::Socket
 
 METHODS
+=======
    new
         $this->new();
 
