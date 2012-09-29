@@ -101,87 +101,30 @@ sub _structurify {
     my $arr_ref    = shift;
     my $hostinfo   = shift;
     my $split_char = shift;
-    my $hash_result ;
+    my $hash_result;
     my @lines = split /\n/, $arr_ref;
 
     foreach (@lines) {
-        chomp;
-	if (my ($attr, $value) = (split/$split_char/, $_)) {
+       chomp;
+       if (my ($attr, $value) = (split/$split_char/, $_)) {
+            $hash_result->{trim($attr)} = trim($value);
 	    if ($attr =~ /Zookeeper version/) {
 	        $hash_result->{'version_string'} = trim($value);
 		($hash_result->{'version'} = trim($value)) 
 		    =~ s/(\d+\.\d+\.\d+)-.*/$1/;
 	    }  
-	    if ($attr =~/Mode/) {
-	         $hash_result->{'mode'} = trim($value);
-	    }
-	    if ($attr =~/Zxid/) {
-		$hash_result->{'zxid'} = trim($value);
-	    }
-	    if ($attr =~/Outstanding/) {
-		$hash_result->{'outstanding'} = trim($value);
-	    }
-	    if ($attr =~/Node count/) {
-		$hash_result->{'nodecount'} = trim($value);
-	    }
-	    if ($attr =~/Sent/) {
-		$hash_result->{'sent'} = trim($value);
-	    }
-	    if ($attr =~/Received/) {
-		$hash_result->{'received'} = trim($value);
-	    }
 	    if ($attr =~ /Latency\smin\/avg\/max/) {
 		($hash_result->{min_latency},
 		     $hash_result->{avg_latency},
 		     $hash_result->{max_latency}) = (split/\//, trim($value));
 	    }
-            if ($attr =~ /clientPort/) {
-                $hash_result->{'clientPort'} = trim($value);
-            }
-            if ($attr =~ /dataDir/) {
-                $hash_result->{'datadir'} = trim($value);
-            }
-            if ($attr =~ /dataLogDir/) {
-                $hash_result->{'datalogdir'} = trim($value);
-            }
-            if ($attr =~ /tickTime/) {
-                $hash_result->{'ticktime'} = trim($value);
-            }
-            if ($attr =~ /maxClientCnxns/) {
-                $hash_result->{'maxclientcnxns'} = trim($value);
-            }
-            if ($attr =~ /minSessionTimeout/) {
-                $hash_result->{'minsessiontimeout'} = trim($value);
-            }
-            if ($attr =~ /maxSessionTimeout/) {
-                $hash_result->{'maxsessiontimeout'} = trim($value);
-            }
-            if ($attr =~ /serverId/) {
-                $hash_result->{'serverid'} = trim($value);
-            }
-            if ($attr =~ /initLimit/) {
-                $hash_result->{'initlimit'} = trim($value);
-            }
-            if ($attr =~ /syncLimit/) {
-                $hash_result->{'synclimit'} = trim($value);
-            }
-            if ($attr =~ /electionAlg/) {
-                $hash_result->{'electionalg'} = trim($value);
-            }
-            if ($attr =~ /electionPort/) {
-                $hash_result->{'electionport'} = trim($value);
-            }
-            if ($attr =~ /quorumPort/) {
-                $hash_result->{'quorumport'} = trim($value);
-            }
-            if ($attr =~ /peerType/) {
-                $hash_result->{'peertype'} = trim($value);
-            }
-	} 
+
+        }
     }
     $hash_result->{'hostname'} = trim($hostinfo);
     return $hash_result;
 }
+
 
 sub trim {
   
@@ -196,9 +139,9 @@ sub mntr {
 
    my $self = shift;
    my $cmd = 'mntr';
-
    my $hash_result = 
           _structurify($self->_poll_zhost($cmd), $self->{hostname}, ':');
+   $hash_result->{'cmd'} = $cmd;
    return $hash_result;
 
 }
@@ -209,6 +152,7 @@ sub stat {
    my $cmd = 'stat';
    my $hash_result = 
           _structurify($self->_poll_zhost($cmd), $self->{hostname}, ':');
+   $hash_result->{'cmd'} = $cmd;
    return $hash_result;
 
 }
@@ -217,9 +161,20 @@ sub conf {
    
     my $self = shift;
     my $cmd = 'conf';
-
     my $hash_result =
           _structurify($self->_poll_zhost($cmd), $self->{hostname}, '=');
+    $hash_result->{'cmd'} = $cmd;
+    return $hash_result;
+
+}
+
+sub envi {
+   
+    my $self = shift;
+    my $cmd = 'envi';
+    my $hash_result =
+          _structurify($self->_poll_zhost($cmd), $self->{hostname}, '=');
+    $hash_result->{'cmd'} = $cmd;
     return $hash_result;
 
 }
