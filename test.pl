@@ -3,8 +3,14 @@
 use Net::ZKMon;
 use Data::Dumper;
 
-my $hostconn = new Net::ZKMon(hostname => 'gs1136.blue.ua2.inmobi.com');
+my $zkmon = new Net::ZKMon(hostname => 'zookeeper1.corp.mycompany.com');
 
-print Dumper($hostconn->stat);
+print Dumper($zkmon->stat);
+
+$zkmon = new Net::ZKMon;
+
+print Dumper($zkmon->envi);
+
+print Dumper($zkmon->envi('zookeeper2.corp.mycompany.com'));
 
 
