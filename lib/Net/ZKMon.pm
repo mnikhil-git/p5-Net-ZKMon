@@ -214,4 +214,8 @@ L<IO::Socket>
 
  $this->stat();
 
+=head2 envi
+
+ $this->envi();
+
 =cut
