@@ -119,7 +119,7 @@ sub _structurify {
 		     $hash_result->{max_latency}) = (split/\//, trim($value));
 	    }
 
-        }
+       }
     }
     $hash_result->{'hostname'} = trim($hostinfo);
     return $hash_result;
@@ -149,6 +149,8 @@ sub mntr {
 sub stat {
 
    my $self = shift;
+   $self->{'hostname'} = shift || $self->{'hostname'};
+   $self->{'port'} = shift || $self->{'port'}; 
    my $cmd = 'stat';
    my $hash_result = 
           _structurify($self->_poll_zhost($cmd), $self->{hostname}, ':');
@@ -160,6 +162,8 @@ sub stat {
 sub conf {
    
     my $self = shift;
+    $self->{'hostname'} = shift || $self->{'hostname'};
+    $self->{'port'} = shift || $self->{'port'}; 
     my $cmd = 'conf';
     my $hash_result =
           _structurify($self->_poll_zhost($cmd), $self->{hostname}, '=');
@@ -171,6 +175,8 @@ sub conf {
 sub envi {
    
     my $self = shift;
+    $self->{'hostname'} = shift || $self->{'hostname'};
+    $self->{'port'} = shift || $self->{'port'}; 
     my $cmd = 'envi';
     my $hash_result =
           _structurify($self->_poll_zhost($cmd), $self->{hostname}, '=');
