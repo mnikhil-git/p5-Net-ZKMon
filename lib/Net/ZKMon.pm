@@ -15,9 +15,7 @@ use vars qw($VERSION $DEBUG);
 use strict;
 use Data::Dumper;
 
-require Exporter;
 require AutoLoader;
-
 
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK
             $DEBUG $HOSTNAME);
@@ -28,10 +26,8 @@ use constant DEFAULT_SOCKET_TIMEOUT    => 60;
 use constant DEFAULT_ZOO_CMD           => 'conf'; 
 # Note: conf command is available since ZooKeeper version 3.3.0
 
-@ISA = qw(Exporter AutoLoader);
-@EXPORT_OK = qw(
-	mntr stat envi conf 
-);
+@ISA = qw(AutoLoader);
+
 $VERSION = '0.01';
 
 sub new {
