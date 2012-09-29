@@ -187,3 +187,38 @@ sub envi {
 
 1;
 __END__
+=head1 NAME
+
+Net::ZKMon
+
+=head1 DESCRIPTION
+
+Description : 
+  A wrapper module around Zookeeper's 4 letter command words.
+  The intention is to use the abstract methods and have the resultant
+  data available in perl's scalar reference/hash and thus reducing the parsing
+  overhead involved in the scripts.
+
+=head1 REQUIRES
+
+L<IO::Socket> 
+
+=head1 METHODS
+
+=head2 new
+
+ $this->new();
+
+=head2 conf
+
+ $this->conf();
+
+=head2 mntr
+
+ $this->mntr();
+
+=head2 stat
+
+ $this->stat();
+
+=cut
