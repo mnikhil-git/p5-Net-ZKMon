@@ -14,9 +14,12 @@ use Carp;
 use vars qw($VERSION $DEBUG);
 use strict;
 use Data::Dumper;
-$VERSION = '0.01';
 
-use vars qw($VERSION @ISA @EXPORT @EXPORT_OK $LAST_ERROR $filer_sess
+require Exporter;
+require AutoLoader;
+
+
+use vars qw($VERSION @ISA @EXPORT @EXPORT_OK
             $DEBUG $HOSTNAME);
 
 use constant CLIENTPORT                => 2181;
@@ -25,6 +28,11 @@ use constant DEFAULT_SOCKET_TIMEOUT    => 60;
 use constant DEFAULT_ZOO_CMD           => 'conf'; 
 # Note: conf command is available since ZooKeeper version 3.3.0
 
+@ISA = qw(Exporter AutoLoader);
+@EXPORT_OK = qw(
+	mntr stat envi conf 
+);
+$VERSION = '0.01';
 
 sub new {
 
@@ -220,3 +228,6 @@ sub conf {
     return $hash_result;
 
 }
+
+1;
+__END__
