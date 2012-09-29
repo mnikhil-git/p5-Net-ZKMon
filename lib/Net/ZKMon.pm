@@ -1,13 +1,5 @@
 package Net::ZKMon;
 #
-# $Header:$
-# 
-# Description : 
-#   A wrapper module around Zookeeper's 4 letter command words.
-#   The intention is to use the abstract methods and have the resultant
-#   data available in perl's scalar reference/hash and thus reducing the parsing
-#   overhead involved in the scripts.
-#
 
 use IO::Socket;
 use Carp;
@@ -99,7 +91,6 @@ sub _connect {
 sub _structurify {
 
     my $arr_ref    = shift;
-    my $hostinfo   = shift;
     my $split_char = shift;
     my $hash_result;
     my @lines = split /\n/, $arr_ref;
@@ -121,7 +112,6 @@ sub _structurify {
 
        }
     }
-    $hash_result->{'hostname'} = trim($hostinfo);
     return $hash_result;
 }
 
@@ -140,7 +130,7 @@ sub mntr {
    my $self = shift;
    my $cmd = 'mntr';
    my $hash_result = 
-          _structurify($self->_poll_zhost($cmd), $self->{hostname}, ':');
+          _structurify($self->_poll_zhost($cmd), ':');
    $hash_result->{'cmd'} = $cmd;
    return $hash_result;
 
@@ -153,7 +143,8 @@ sub stat {
    $self->{'port'} = shift || $self->{'port'}; 
    my $cmd = 'stat';
    my $hash_result = 
-          _structurify($self->_poll_zhost($cmd), $self->{hostname}, ':');
+          _structurify($self->_poll_zhost($cmd), ':');
+   $hash_result->{'hostname'} = $self->{'hostname'};
    $hash_result->{'cmd'} = $cmd;
    return $hash_result;
 
@@ -166,7 +157,8 @@ sub conf {
     $self->{'port'} = shift || $self->{'port'}; 
     my $cmd = 'conf';
     my $hash_result =
-          _structurify($self->_poll_zhost($cmd), $self->{hostname}, '=');
+          _structurify($self->_poll_zhost($cmd), '=');
+    $hash_result->{'hostname'} = $self->{'hostname'};
     $hash_result->{'cmd'} = $cmd;
     return $hash_result;
 
@@ -179,7 +171,8 @@ sub envi {
     $self->{'port'} = shift || $self->{'port'}; 
     my $cmd = 'envi';
     my $hash_result =
-          _structurify($self->_poll_zhost($cmd), $self->{hostname}, '=');
+          _structurify($self->_poll_zhost($cmd), '=');
+    $hash_result->{'hostname'} = $self->{'hostname'};
     $hash_result->{'cmd'} = $cmd;
     return $hash_result;
 
@@ -196,8 +189,8 @@ Net::ZKMon
 Description : 
   A wrapper module around Zookeeper's 4 letter command words.
   The intention is to use the abstract methods and have the resultant
-  data available in perl's scalar reference/hash and thus reducing the parsing
-  overhead involved in the scripts.
+  data available in perl's scalar reference/hash ;
+  thus reducing the parsing overhead involved in the scripts.
 
 =head1 REQUIRES
 
