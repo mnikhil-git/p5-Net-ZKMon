@@ -23,20 +23,33 @@ REQUIRES
 METHODS
 =======
    new
-        $this->new();
+       
+       $this->new();
+
 
    conf
+   
         $this->conf();
 
+
    mntr
+        
         $this->mntr();
 
+
    stat
+        
         $this->stat();
 
+
    envi
+        
         $this->envi();
 
 
+SEE ALSO
+========
+
+   Zookeeper 4 letter commands : http://zookeeper.apache.org/doc/current/zookeeperAdmin.html#sc_zkCommands
 
 perl v5.12.3                      2012-09-30                     Net::ZKMon(3)
