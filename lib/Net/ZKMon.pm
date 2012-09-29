@@ -98,7 +98,8 @@ sub _connect {
 
 sub _structurify {
 
-    my $arr_ref = shift;
+    my $arr_ref    = shift;
+    my $hostinfo   = shift;
     my $split_char = shift;
     my $hash_result ;
     my @lines = split /\n/, $arr_ref;
@@ -178,6 +179,7 @@ sub _structurify {
             }
 	} 
     }
+    $hash_result->{'hostname'} = trim($hostinfo);
     return $hash_result;
 }
 
@@ -196,8 +198,7 @@ sub mntr {
    my $cmd = 'mntr';
 
    my $hash_result = 
-       _structurify($self->_poll_zhost($cmd), ':');
-
+          _structurify($self->_poll_zhost($cmd), $self->{hostname}, ':');
    return $hash_result;
 
 }
@@ -207,8 +208,7 @@ sub stat {
    my $self = shift;
    my $cmd = 'stat';
    my $hash_result = 
-          _structurify($self->_poll_zhost($cmd), ':');
-   
+          _structurify($self->_poll_zhost($cmd), $self->{hostname}, ':');
    return $hash_result;
 
 }
@@ -219,8 +219,7 @@ sub conf {
     my $cmd = 'conf';
 
     my $hash_result =
-          _structurify($self->_poll_zhost($cmd), '=');
-
+          _structurify($self->_poll_zhost($cmd), $self->{hostname}, '=');
     return $hash_result;
 
 }
