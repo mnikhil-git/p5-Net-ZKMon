@@ -47,6 +47,11 @@ METHODS
         $this->envi();
 
 
+   srvr
+  
+        $this->srvr();
+
+
 SEE ALSO
 ========
 
