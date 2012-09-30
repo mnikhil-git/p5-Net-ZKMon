@@ -178,6 +178,20 @@ sub envi {
 
 }
 
+sub srvr {
+   
+    my $self = shift;
+    $self->{'hostname'} = shift || $self->{'hostname'};
+    $self->{'port'} = shift || $self->{'port'}; 
+    my $cmd = 'srvr';
+    my $hash_result =
+          _structurify($self->_poll_zhost($cmd), '=');
+    $hash_result->{'hostname'} = $self->{'hostname'};
+    $hash_result->{'cmd'} = $cmd;
+    return $hash_result;
+
+}
+
 1;
 __END__
 =head1 NAME
@@ -217,5 +231,9 @@ L<IO::Socket>
 =head2 envi
 
  $this->envi();
+
+=head2 srvr
+
+ $this->srvr();
 
 =cut
