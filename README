@@ -1,4 +1,6 @@
-Apache ZooKeeper:
+Net::ZKMon - Perl extension for Apache ZooKeeper Monitoring
+===========================================================
+About Apache ZooKeeper:
 
 From http://hadoop.apache.org/zookeeper/: 
 "ZooKeeper is a high-performance coordination service for distributed applications."
@@ -13,5 +15,10 @@ Zookeeper exposes 4 letter keywords meant for simple monitoring of the ensemble 
 Please read :  
   http://zookeeper.apache.org/doc/current/zookeeperAdmin.html#sc_zkCommands for more details
 
- 
 
+INSTALLATION
+
+   $ perl Makefile.PL
+   $ make
+   $ make test
+   $ make install
