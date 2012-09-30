@@ -1,3 +1,8 @@
 lib/Net/ZKMon.pm
 LICENSE.txt
+Makefile.PL
+MANIFEST
 README
+README.md
+t/0.load.t
+test.pl
