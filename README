@@ -1,7 +1,17 @@
 Apache ZooKeeper:
 
-From http://hadoop.apache.org/zookeeper/: "ZooKeeper is a high-performance coordination service for distributed applications."
+From http://hadoop.apache.org/zookeeper/: 
+"ZooKeeper is a high-performance coordination service for distributed applications."
 
-It exposes common services - such as naming, configuration management, synchronization, and group services - in a simple interface so you don't have to write them from scratch. You can use it off-the-shelf to implement consensus, group management, leader election, and presence protocols.
+It exposes common services - such as naming, configuration management, synchronization, and group services - 
+  in a simple interface so you don't have to write them from scratch. 
+  You can use it off-the-shelf to implement consensus, group management, 
+  leader election, and presence protocols.
 
+Zookeeper exposes 4 letter keywords meant for simple monitoring of the ensemble service.
+
+Please read :  
+  http://zookeeper.apache.org/doc/current/zookeeperAdmin.html#sc_zkCommands for more details
+
+ 
 
