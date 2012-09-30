@@ -20,7 +20,7 @@ use constant DEFAULT_ZOO_CMD           => 'conf';
 
 @ISA = qw(AutoLoader);
 
-$VERSION = '0.01a';
+$VERSION = '0.02';
 
 sub new {
 
