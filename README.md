@@ -52,6 +52,4 @@ SEE ALSO
 
    Zookeeper 4 letter commands : http://zookeeper.apache.org/doc/current/zookeeperAdmin.html#sc_zkCommands
 
-   Source is hosted here at : https://github.com/mnikhil-git/p5-Net-ZKMon
-
 perl v5.12.3                      2012-09-30                     Net::ZKMon(3)
