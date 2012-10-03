@@ -185,7 +185,7 @@ sub srvr {
     $self->{'port'} = shift || $self->{'port'}; 
     my $cmd = 'srvr';
     my $hash_result =
-          _structurify($self->_poll_zhost($cmd), '=');
+          _structurify($self->_poll_zhost($cmd), ':');
     $hash_result->{'hostname'} = $self->{'hostname'};
     $hash_result->{'cmd'} = $cmd;
     return $hash_result;
