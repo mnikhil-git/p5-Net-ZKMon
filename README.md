@@ -20,6 +20,11 @@ REQUIRES
 ========
        IO::Socket
 
+HOW TO INSTALL
+===============
+       
+       Please read README document.        
+  
 METHODS
 =======
    new
