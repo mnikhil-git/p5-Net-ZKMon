@@ -22,3 +22,7 @@ INSTALLATION
    $ make
    $ make test
    $ make install
+
+OR more simply just use cpanm
+  
+   $ cpanm Net::ZKMon
