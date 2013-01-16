@@ -30,6 +30,7 @@ sub new {
     my $self = bless {
                hostname => $args{hostname},
                port     => $args{ClientPort} || CLIENTPORT,
+               timeout  => $args{timeout}    || DEFAULT_SOCKET_TIMEOUT,
                }, $class;
     $self->debug($args{debug});
     
@@ -76,7 +77,7 @@ sub _connect {
            PeerAddr => $self->{hostname},
            PeerPort => $self->{port},
            Proto    => 'tcp', 
-           Timeout  => DEFAULT_SOCKET_TIMEOUT,
+           Timeout  => $self->{timeout},
            Type     => SOCK_STREAM,
           ) or 
           croak "Could not connect to $self->{hostname}:$self->{port}/tcp : $@";
