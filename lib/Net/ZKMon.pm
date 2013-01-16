@@ -20,7 +20,7 @@ use constant DEFAULT_ZOO_CMD           => 'conf';
 
 @ISA = qw(AutoLoader);
 
-$VERSION = '0.02a';
+$VERSION = '0.02b';
 
 sub new {
 
@@ -73,12 +73,12 @@ sub _connect {
     my $socket = ();
     if ($self->{hostname}) {
         $socket = IO::Socket::INET->new(
-                   PeerAddr => $self->{hostname},
-                   PeerPort => $self->{port},
-                   Proto    => 'tcp', 
-                   Timeout  => DEFAULT_SOCKET_TIMEOUT,
-                   Type     => SOCK_STREAM,
-                  ) or 
+           PeerAddr => $self->{hostname},
+           PeerPort => $self->{port},
+           Proto    => 'tcp', 
+           Timeout  => DEFAULT_SOCKET_TIMEOUT,
+           Type     => SOCK_STREAM,
+          ) or 
           croak "Could not connect to $self->{hostname}:$self->{port}/tcp : $@";
     } else {
        croak "Please specify a hostname for connecting : $@ ";
@@ -95,20 +95,43 @@ sub _structurify {
     my $hash_result;
     my @lines = split /\n/, $arr_ref;
 
+    my $attr;
+    my $value;
+    my @val_array = ();
+    my $array_mode = 0;
+
     foreach (@lines) {
        chomp;
-       if (my ($attr, $value) = (split/$split_char/, $_)) {
+       my $line = $_;
+       print Dumper($line);
+       if($line =~ /^([a-zA-Z0-9_]+):$/){
+           $attr=$1;
+           @val_array = ();
+           $array_mode = 1;
+           next;
+       }
+       if ( $array_mode == 1 ) {
+           if ( $line ne "" ){
+                push(@val_array,$line);
+                next;
+           }else {
+                $hash_result->{trim($attr)} = @val_array;
+                $array_mode = 0;
+                next;
+           }
+       }
+       if (($attr, $value) = (split/$split_char/, $_)) {
             $hash_result->{trim($attr)} = trim($value);
-	    if ($attr =~ /Zookeeper version/) {
-	        $hash_result->{'version_string'} = trim($value);
-		($hash_result->{'version'} = trim($value)) 
-		    =~ s/(\d+\.\d+\.\d+)-.*/$1/;
-	    }  
-	    if ($attr =~ /Latency\smin\/avg\/max/) {
-		($hash_result->{min_latency},
-		     $hash_result->{avg_latency},
-		     $hash_result->{max_latency}) = (split/\//, trim($value));
-	    }
+            if ($attr =~ /Zookeeper version/) {
+                $hash_result->{'version_string'} = trim($value);
+                ($hash_result->{'version'} = trim($value)) 
+                    =~ s/(\d+\.\d+\.\d+)-.*/$1/;
+            }  
+            if ($attr =~ /Latency\smin\/avg\/max/) {
+                ($hash_result->{min_latency},
+                     $hash_result->{avg_latency},
+                     $hash_result->{max_latency}) = (split/\//, trim($value));
+            }
 
        }
     }
