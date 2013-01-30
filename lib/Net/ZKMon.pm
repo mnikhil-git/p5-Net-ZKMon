@@ -77,7 +77,7 @@ sub _connect {
                    Timeout  => $self->{timeout},
                    Type     => SOCK_STREAM,
                   ) or 
-          carp "Could not connect to $self->{hostname}:$self->{port}/tcp : $@";
+          $self->{error_msg}= "Could not connect to $self->{hostname}:$self->{port}/tcp : $@";
     } else {
        carp "Please specify a hostname for connecting : $@ ";
     }
