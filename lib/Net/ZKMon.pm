@@ -1,7 +1,6 @@
 package Net::ZKMon;
 
 use IO::Socket;
-use Carp;
 use vars qw($VERSION $DEBUG);
 use strict;
 
@@ -77,9 +76,9 @@ sub _connect {
                    Timeout  => $self->{timeout},
                    Type     => SOCK_STREAM,
                   ) or 
-          $self->{error_msg}= "Could not connect to $self->{hostname}:$self->{port}/tcp : $@";
+          $self->{error_msg} = "Could not connect to $self->{hostname}:$self->{port}/tcp : $@";
     } else {
-       carp "Please specify a hostname for connecting : $@ ";
+       $self->{error_msg} = "Please specify a hostname for connecting : $@ ";
     }
 
     $self->{socket} = $socket;
