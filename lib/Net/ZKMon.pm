@@ -1,11 +1,8 @@
 package Net::ZKMon;
-#
 
 use IO::Socket;
-use Carp;
 use vars qw($VERSION $DEBUG);
 use strict;
-use Data::Dumper;
 
 require AutoLoader;
 
@@ -29,7 +26,8 @@ sub new {
 
     my $self = bless {
                hostname => $args{hostname},
-               port     => $args{ClientPort} || CLIENTPORT,
+               port     => $args{port} || CLIENTPORT,
+               timeout  => $args{timeout} || DEFAULT_SOCKET_TIMEOUT,
                }, $class;
     $self->debug($args{debug});
     
@@ -48,7 +46,7 @@ sub debug {
 #
 # run 4 letter commands for zookeeper
 #
-sub _poll_zhost {
+sub send_cmd {
 
    my $self = shift;
    my $cmd = shift || DEFAULT_ZOO_CMD;
@@ -59,11 +57,10 @@ sub _poll_zhost {
        $self->{socket}->send($cmd);            
        $self->{socket}->recv($return_content, BUFFER_LENGTH ); 
        $self->{socket}->close;
-       return $return_content;
+       $self->{response} = $return_content;
    } else {
-       croak "There is no connection to host $self->{hostname} : $@ ";
+        $self->{error_msg}= "There is no connection to host $self->{hostname} : $@ ";
    }
-  
    
 }
 
@@ -76,16 +73,15 @@ sub _connect {
                    PeerAddr => $self->{hostname},
                    PeerPort => $self->{port},
                    Proto    => 'tcp', 
-                   Timeout  => DEFAULT_SOCKET_TIMEOUT,
+                   Timeout  => $self->{timeout},
                    Type     => SOCK_STREAM,
                   ) or 
-          croak "Could not connect to $self->{hostname}:$self->{port}/tcp : $@";
+          $self->{error_msg} = "Could not connect to $self->{hostname}:$self->{port}/tcp : $@";
     } else {
-       croak "Please specify a hostname for connecting : $@ ";
+       $self->{error_msg} = "Please specify a hostname for connecting : $@ ";
     }
 
     $self->{socket} = $socket;
-
 }
 
 sub _structurify {
@@ -95,20 +91,42 @@ sub _structurify {
     my $hash_result;
     my @lines = split /\n/, $arr_ref;
 
+    my $attr;
+    my $value;
+
+    my @val_array = ();
+    my $array_mode = 0;
     foreach (@lines) {
        chomp;
-       if (my ($attr, $value) = (split/$split_char/, $_)) {
+       my $line = $_;
+       if($line =~ /^([a-zA-Z0-9_]+):$/){
+           $attr=$1;
+           @val_array = ();
+           $array_mode = 1;
+           next;
+       }
+       if ( $array_mode == 1 ) {
+           if ( $line ne "" ){
+                push(@val_array,$line);
+                next;
+           }else {
+                $hash_result->{trim($attr)} = [@val_array];
+                $array_mode = 0;
+                next;
+           }
+       }
+       if (($attr, $value) = (split/$split_char/, $_)) {
             $hash_result->{trim($attr)} = trim($value);
-	    if ($attr =~ /Zookeeper version/) {
-	        $hash_result->{'version_string'} = trim($value);
-		($hash_result->{'version'} = trim($value)) 
-		    =~ s/(\d+\.\d+\.\d+)-.*/$1/;
-	    }  
-	    if ($attr =~ /Latency\smin\/avg\/max/) {
-		($hash_result->{min_latency},
-		     $hash_result->{avg_latency},
-		     $hash_result->{max_latency}) = (split/\//, trim($value));
-	    }
+            if ($attr =~ /Zookeeper version/) {
+                $hash_result->{'version_string'} = trim($value);
+                ($hash_result->{'version'} = trim($value)) 
+                    =~ s/(\d+\.\d+\.\d+)-.*/$1/;
+            }  
+            if ($attr =~ /Latency\smin\/avg\/max/) {
+                ($hash_result->{min_latency},
+                     $hash_result->{avg_latency},
+                     $hash_result->{max_latency}) = (split/\//, trim($value));
+            }
 
        }
     }
@@ -129,10 +147,14 @@ sub mntr {
 
    my $self = shift;
    my $cmd = 'mntr';
-   my $hash_result = 
-          _structurify($self->_poll_zhost($cmd), ':');
-   $hash_result->{'cmd'} = $cmd;
-   return $hash_result;
+   $self->send_cmd($cmd);
+   if  ($self->{response} ){
+     my $hash_result = _structurify($self->{response}, '\t');
+     $hash_result->{'cmd'} = $cmd;
+     $self->{hash_result}=$hash_result;
+     return 0;
+   }
+   return -1;
 
 }
 
@@ -142,12 +164,16 @@ sub stat {
    $self->{'hostname'} = shift || $self->{'hostname'};
    $self->{'port'} = shift || $self->{'port'}; 
    my $cmd = 'stat';
-   my $hash_result = 
-          _structurify($self->_poll_zhost($cmd), ':');
-   $hash_result->{'hostname'} = $self->{'hostname'};
-   $hash_result->{'cmd'} = $cmd;
-   return $hash_result;
 
+   $self->send_cmd($cmd);
+   if  ($self->{response} ){
+     my $hash_result = _structurify($self->{response}, ':');
+     $hash_result->{'cmd'} = $cmd;
+     $hash_result->{'hostname'} = $self->{'hostname'};
+     $self->{hash_result}=$hash_result;
+     return 0;
+   }
+   return -1;
 }
 
 sub conf {
@@ -156,11 +182,16 @@ sub conf {
     $self->{'hostname'} = shift || $self->{'hostname'};
     $self->{'port'} = shift || $self->{'port'}; 
     my $cmd = 'conf';
-    my $hash_result =
-          _structurify($self->_poll_zhost($cmd), '=');
-    $hash_result->{'hostname'} = $self->{'hostname'};
-    $hash_result->{'cmd'} = $cmd;
-    return $hash_result;
+
+   $self->send_cmd($cmd);
+   if  ($self->{response} ){
+     my $hash_result = _structurify($self->{response}, '=');
+     $hash_result->{'hostname'} = $self->{'hostname'};
+     $hash_result->{'cmd'} = $cmd;
+     $self->{hash_result}=$hash_result;
+     return 0;
+    }
+    return -1;
 
 }
 
@@ -170,25 +201,34 @@ sub envi {
     $self->{'hostname'} = shift || $self->{'hostname'};
     $self->{'port'} = shift || $self->{'port'}; 
     my $cmd = 'envi';
-    my $hash_result =
-          _structurify($self->_poll_zhost($cmd), '=');
-    $hash_result->{'hostname'} = $self->{'hostname'};
-    $hash_result->{'cmd'} = $cmd;
-    return $hash_result;
+
+    $self->send_cmd($cmd);
+    if  ($self->{response} ){
+      my $hash_result = _structurify($self->{response}, '=');
+      $hash_result->{'hostname'} = $self->{'hostname'};
+      $hash_result->{'cmd'} = $cmd;
+      $self->{hash_result}=$hash_result;
+      return 0;
+     }
+     return -1;
 
 }
 
 sub srvr {
-   
     my $self = shift;
     $self->{'hostname'} = shift || $self->{'hostname'};
     $self->{'port'} = shift || $self->{'port'}; 
     my $cmd = 'srvr';
-    my $hash_result =
-          _structurify($self->_poll_zhost($cmd), ':');
-    $hash_result->{'hostname'} = $self->{'hostname'};
-    $hash_result->{'cmd'} = $cmd;
-    return $hash_result;
+
+    $self->send_cmd($cmd);
+    if  ($self->{response} ){
+      my $hash_result = _structurify($self->{response}, ':');
+      $hash_result->{'hostname'} = $self->{'hostname'};
+      $hash_result->{'cmd'} = $cmd;
+      $self->{hash_result}=$hash_result;
+      return 0;
+     }
+     return -1;
 
 }
 
